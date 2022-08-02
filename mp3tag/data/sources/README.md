@@ -1,4 +1,4 @@
-# Contributors of the Audible source scripts
+# Contributors to the Audible source scripts
 
 Domain | Contributor
 --- | ---
