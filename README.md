@@ -1,7 +1,7 @@
 # Plex & Booksonic Audiobook Guide
-This guide is specifically for optimal Audiobook experience using Plex, which in it's current state only quasi-supports audiobooks. This is my method for getting the most metadata into Plex in the least amount of time.  I'll be doing a deep dive into some advanced features of the tools available to us in order to get a nice, clean, and functional UI. This guide is meant to serve as a framework for fully utilizing metadata.  Everything is customizable, and easy to change.
+This guide is specifically for optimal Audiobook experience using Plex, which in it's current state only quasi-supports audiobooks. This is my method for processing large libraries with bad/missing tags as quick as possible while getting the most metadata into Plex in the least amount of time.  I'll be doing a deep dive into some advanced features of the tools available to us in order to get a nice, clean, and functional UI. This guide is meant to serve as a framework for fully utilizing metadata.  Everything is customizable, and easy to change.  While focused on Plex, if you follow the tagging and file processing steps you will also be compatible with Booksonic and AudiobookShelf servers.
 
-***Note**: This guide targets and has been tested on Windows systems. Most of it also works on Unix but Mp3tag only exists for Windows. For workarounds see [issue #2](/../../issues/2).*
+> ***Note**: This guide targets and has been tested on Windows systems. Most of it also works on Linux/Mac but the Mp3tag Audible WebSource script only works on Windows. For workarounds see [issue #2](/../../issues/2).*
 ### Contents
 * [Goal](#goal)
 * [Working Folders](#working-folders)  
@@ -23,7 +23,12 @@ This guide is specifically for optimal Audiobook experience using Plex, which in
 * [Notes](#notes)
 
 ### Goal
-Show as much metadata as possible in Plex &amp; Booksonic.  Filter/browse/search by Narrator, Author, Genre, Year, Series, Rating, or Publisher.  Show Album Covers and Summary's. Make the organizing and tagging as quick and painless as possible.  
+Show as much metadata as possible in Plex &amp; Booksonic.  Filter/browse/search by Narrator, Author, Genre, Year, Series, Rating, or Publisher.  Show Album Covers and Summary's. Make the organizing and tagging as quick and painless as possible. We need to do these 4 general steps:  
+
+0. (Optional) Convert mp3's to chapterized m4b.  
+1. Ensure the ALBUM and ALBUMARTIST (or ARTIST) tags are set and correct.  
+2. Install the Audnexus Audible Metadata Agent in Plex.  
+3. Use a 3rd party Audiobook player app such as BookCamp or Prologue.  
 
 ![Plex Library View](https://i.imgur.com/k4up0ao.jpg)
 <p float="left">
@@ -177,10 +182,8 @@ If you use both Linux and Windows, I have a Linux script that watches your `/ori
   * Click `Yes` to merge/overwrite files  
 
 #### Edit the newly copied config files with your specific paths
-* Right click the following provided config files and OPEN WITH Notepad++  
-  * `%APPDATA%\Mp3tag\data\action\1 m4b.mta` Update lines 3, 15, 22 with the path to your Plex `\Audiobook` folder  
-  * `%APPDATA%\Mp3tag\data\action\001.mta` Update lines 3, 15, 22 with the path to your Plex `\Audiobook` folder  
-  * `%APPDATA%\Mp3tag\data\action\01.mta` Update lines 3, 15, 22 with the path to your Plex `\Audiobook` folder  
+* Right click the following provided config files and OPEN WITH Notepad++   
+  * `%APPDATA%\Mp3tag\data\action\&1 Rename Relocate Extras Title.mta` Update lines 3, 15, 22 with the path to your Plex `\Audiobook` folder  
   * `%APPDATA%\Mp3tag\export\001 Generate.mte` Update line 1 with your windows username `C:\Users\your-username-here\...`  
   * `%APPDATA%\Mp3tag\export\desc.mte` Update line 1 with the path to your Plex `\Audiobook` folder  
   * `%APPDATA%\Mp3tag\export\reader.mte` Update line 1 with the path to your Plex `\Audiobook` folder  
@@ -238,23 +241,21 @@ Your New Action should look like this:
 #### Test
 * Put an audiobook file for testing in your `\temp` folder  
 * Open Mp3tag and select all files for that book  
-* `Ctrl-k` and set/fix the Track Numbering
+* `Ctrl-k` and set/fix the Track Numbering if applicable
 * Click the Web Sources drop down button, select Audible.com > Search by Album  
    ![alt text](https://i.imgur.com/Q4ySYh2.png "Web Source Select")  
-* Click the Action drop down button, select the Action that corresponds with the number of files  
-  ![alt text](https://i.imgur.com/knf3ATb.png "Filename-Folder-Cover")  
-  You have three different actions to use depending on the number of files the book has;
-  * For a single track, use the 1 m4b Action. This Action does *not* append a `-pt01` to the end of the filename.  
-  * For 2-99 tracks, use the 01 Action. It will append `-pt01` to the end of the filename.  
-  * For 100-999 tracks, use the 001 Action. It will append `-pt001` to the end of the filename.  
+* Click the Action drop down button, select the `&1 Rename Relocate Extras Title` Action  
+  ![alt text](https://i.imgur.com/OMRONbp.png "Filename-Folder-Cover")  
+
+> Note: After selecting the Web Source manually for the first time we can then use the keyboard shortcut `ctrl+shift+i` to call it moving forward. Likewise the action script can be called using `alt+a 1`.   
 
 <!-- blank line -->
 ----
 <!-- blank line -->
 ### Configure Plex
 #### Install Metadata Agent for Plex
-Follow the Instructions [here](https://github.com/seanap/Audiobooks.bundle#installation)
-* `https://github.com/seanap/Audiobooks.bundle#installation`
+Follow the Instructions [here](https://github.com/djdembeck/Audnexus.bundle)
+* `https://github.com/djdembeck/Audnexus.bundle`
 
 <details>
 <summary>Alternate Installation using WebTools Plex Plugin (click to expand)</summary>
@@ -267,27 +268,28 @@ Follow the Instructions [here](https://github.com/seanap/Audiobooks.bundle#insta
 * Install the Audiobook Metadata Agent using WebTools:  
   * In the WebTools page Click `UAS`
   * Enter the following Manual Installation URL
-    * `https://github.com/seanap/Audiobooks.bundle`
+    * `https://github.com/djdembeck/Audnexus.bundle`
   * Restart Plex
 </details>
 
 #### Configure Metadata Agent in Plex  
-* Go to `Settings > Agents > Artist > Audiobooks` Put Local Media Assets above Audiobooks
- ![alt text](https://i.imgur.com/oEKdpmd.png "Artist Agent Config")
-* Go to `Settings > Agents > Albums > Audiobooks` Put Local Media Assets above Audiobooks
- ![alt text](https://i.imgur.com/1aKHJeB.png "Album Agent Config")
+* Go to `Settings > Agents > Artist > Audiobooks` Put Audnexus above Local Media Assets  
+ ![alt text](https://i.imgur.com/5ZJmSXf.png "Artist Agent Config")
+* Go to `Settings > Agents > Albums > Audiobooks` Put Audnexus above Local Media Assets  
+ ![alt text](https://i.imgur.com/AgzM1Wm.png "Album Agent Config")
 
 #### Create Audiobook Library in Plex
- * **General** select `Music`
- * **Add folders** browse to your Audiobook folders
+ * **General** select `Music`  
+ * **Add folders** browse to your Audiobook folders  
  * **Advanced** set the following:  
-   * Album sorting - By Name (This uses the Albumsort tag to keep series together and in order)
-   * *UNCHECK* Prefer Local Metadata
-   * *CHECK* Store track progress
-   * *UNCHECK* Popular Tracks
-   * Genres - Embedded tags
-   * Album Art - Local Files Only
-   * Agent - Audiobooks
+   * Agent = Audnexus Agents  
+   * Keep existing genre's - The new agent pulls 4-6 meaningful genres but if you want to keep your existing CHECK this box  
+   * Album sorting - By Name (This uses the Albumsort tag to keep series together and in order)  
+   * *UNCHECK* Prefer Local Metadata  
+   * *CHECK* Store track progress  
+   * *UNCHECK* Author Bio  
+   * Genres = None  
+   * Album Art = Local Files Only
 <!-- blank line -->
 ----
 <!-- blank line -->
@@ -300,9 +302,9 @@ Now that the hard part of setting everything up is out of the way, this is what 
   2. `Ctrl-k` Set/fix the track numbers
   3. `Ctrl-shift-i` or Click the Web Source (quick) button
 ![alt text](https://i.imgur.com/AjJbUqE.png "Tag Source")
-  4. Click the Action drop down button, select the Action that corresponds with the number of files  
-  ![alt text](https://i.imgur.com/knf3ATb.png "Filename-Folder-Cover")
-  5. This does not set the Title tag, which Plex uses as the Chapter Name.  There are two easy options to set this:  
+  4. `Alt-a 1` or Click the Action drop down menu  
+  ![alt text](https://i.imgur.com/OMRONbp.png "Filename-Folder-Cover")
+  5. This does not set the TITLE tag for multifile books. Plex uses TITLE as the Chapter Name.  There are two easy options to set this:  
       * Click the `Filename - Tag` button, `Format String=` `%Title%`, this will set the filename as the Chapter name.  
       * Click the Action drop down, select `Chapter %track%` which will give you a generic "Chapter 1, Chapter 2, ..."  
 <!-- blank line -->
@@ -314,7 +316,6 @@ Now that the hard part of setting everything up is out of the way, this is what 
       * `Ctrl-Shift-i` Use if the Album and Artist tag look to be ok, this will bypass the search input dialog box and bring you straight to the results.   
    * If the Author is also the Narrator make sure you delete the duplicate entry in the Artist field.  The script automatically combines the Author and Narrator (ex. `Peter Clines, Ray Porter`) in the Artist tag, which Plex uses as a "All Artists on this track" tag. Combining these tags for the Artist helps when searching Plex.  
    * Try to only keep 1 cover file in the tag, when the script asks if you want to save the existing cover, say "**No**".  If you happen to like the included cover over Audibles, in the Tag Review screen you can click the "Utils" button (bottom left) and UNCHECK "Save Image to Tag", but *make sure you remember to recheck this on the next book*.  
-   * In Plex; If the Audiobook agent matches two different books as the same book, which will look like a duplicate in Plex, Unmatch BOTH books and start by manually matching the incorrect book, then manually re-match the book that was correct.  
 
 <!-- blank line -->
 ----
@@ -343,9 +344,9 @@ I did a lot of digging into ID3 standards and this was the best way I could come
 | `WOAF` (WWWAUDIOFILE)  | Audible Album URL|
 | `stik` (ITUNESMEDIATYPE) | M4B Media type = Audiobook |
 | `pgap` (ITUNESGAPLESS) | M4B Gapless album = 1 |
-| 'shwm' SHOWMOVEMENT    | Show Movement (M4B), if Series then = 1 else blank|
-| `MVNM` MOVEMENTNAME    | Series           |
-| `MVIN` MOVEMENT        | Series Book #    |
+| `shwm` (SHOWMOVEMENT)    | Show Movement (M4B), if Series then = 1 else blank|
+| `MVNM` (MOVEMENTNAME)    | Series           |
+| `MVIN` (MOVEMENT)        | Series Book #    |
 | `TXXX` (SERIES)**      | Series           |
 | `TXXX` (SERIES-PART)** | Series Book #    |
 | `TXXX` (TMP_GENRE1)**    | Genre 1 |
@@ -360,24 +361,25 @@ I did a lot of digging into ID3 standards and this was the best way I could come
 <!-- blank line -->
 ### Players:
 * **iOS**  
-    1. [Prologue](https://apps.apple.com/us/app/prologue/id1459223267) - Connects to Plex  
-    2. [Play:Sub](https://apps.apple.com/us/app/play-sub-music-streamer/id955329386) - Connects to Booksonic  
+    1. [BookCamp](https://apps.apple.com/fr/app/bookcamp/id1523540165) ($12/yr) - Connects to Plex, Cross Platform, NEW! Still in Beta
+    2. [Prologue](https://apps.apple.com/us/app/prologue/id1459223267) ($5) - Connects to Plex,   
+    3. [Play:Sub](https://apps.apple.com/us/app/play-sub-music-streamer/id955329386) - Connects to Booksonic  
 * **Android**  
-    1. [Chronicle](https://play.google.com/store/apps/details?id=io.github.mattpvaughn.chronicle) - Connects to Plex, just released (limited functionality), aims to be similar to Prologue  
-    2. [PlexAmp](https://plexamp.com/) - Connects to Plex, Official Plex audio app, Basic audiobook features but works well enough  
-    3. [Booksonic](https://play.google.com/store/apps/details?id=github.popeen.dsub) - Connects to [Booksonic](https://booksonic.org/), has a few quirks but it works  
-    4. [Smart](https://play.google.com/store/apps/details?id=ak.alizandro.smartaudiobookplayer) - Local media files only, but tons of great Audiobook specific features  
+    1. [BookCamp](https://play.google.com/store/apps/details?id=app.bookcamp.android) ($12/yr) - Connects to Plex, Cross Platform, NEW! Still in Beta
+    2. [Chronicle](https://play.google.com/store/apps/details?id=io.github.mattpvaughn.chronicle) (Opensource) - Connects to Plex, limited functionality but works well  
+    3. [PlexAmp](https://plexamp.com/) (Plexpass) - Connects to Plex, Official Plex audio app, Music focused player, easy to lose your place.  
+    4. [Booksonic](https://play.google.com/store/apps/details?id=github.popeen.dsub) - Connects to [Booksonic](https://booksonic.org/), has a few quirks but it works  
+    5. [Smart](https://play.google.com/store/apps/details?id=ak.alizandro.smartaudiobookplayer) - Local media files only, but tons of great Audiobook specific features  
 <!-- blank line -->
 ----
 <!-- blank line -->
 ### Notes:
 Once you have mp3tag, Audiobook metadata agent, and Plex configured the work flow becomes pretty quick and painless, especially when using keyboard shortcuts.   
 
-Following this guide will also give you everything you need for a properly organized Booksonic server.  While Plex doesn't really care about your folder structure beyond `/Audiobook/Author/Book/book.mp3`, Booksonic exclusively uses folder structure for it's organization and it also looks for `cover.jpg`/`desc.txt`/`reader.txt` files (automatically created with the Action script) for additional metadata.
+Following this guide will also give you everything you need for a properly organized AudiobookShelf and Booksonic server.  While Plex doesn't really care about your folder structure beyond `/Audiobook/Author/Book/book.mp3`, Booksonic exclusively uses folder structure for it's organization and it also looks for `cover.jpg`/`desc.txt`/`reader.txt` files (automatically created with the Action script) for additional metadata.
 
-If you have an iOS device use the [Prologue app](https://prologue-app.com/), it is *miles* better than the Plex for iOS app.
+I currently use [BookCamp](https://www.bookcamp.app/) ($12/yr), it is *miles* better than the Plex app and PlexAmp and works on both iOS and Android, but if you are on iOS then Prologue is the preferred option.
 
-For Android devices, I recently started using the updated PlexAmp Android app and it handles Audiobooks much better. It's still not at the same level as Prologue, or a dedicated player like Smart. Pros: It lets you filter/browse by Genre, Narrator, Year, it remembers where you left off very well, it supports Car Play and Android Auto. Cons: Suffers from the 90% marked as Played bug in plex, no sleep timer, requires PlexPass.
 <!-- blank line -->
 ----
 <!-- blank line -->
